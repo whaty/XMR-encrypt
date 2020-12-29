@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>XMR私人加密</title>
+    <!-- for-mobile-apps -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="XMR私人加密"/>
+    <script type="application/x-javascript"> addEventListener("load", function () {
+        setTimeout(hideURLbar, 0);
+    }, false);
+
+    function hideURLbar() {
+        window.scrollTo(0, 1);
+    } </script>
+    <!-- //for-mobile-apps -->
+    <!-- //custom-theme -->
+    <link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
+    <!-- js -->
+    <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="js/aes.js"></script>
+    <script type="text/javascript" src="js/pad-zeropadding-min.js"></script>
+    <!-- //js -->
+
+    <script>
+        function encrypt1() {
+            var seed = document.getElementById("seed").value;
+            var height = document.getElementById("height").value;
+            var PublicAddress = document.getElementById("PublicAddress").value;
+            var ViewKey = document.getElementById("ViewKey").value;
+            var SpendKey = document.getElementById("SpendKey").value;
+            if (!seed) {
+                alert("助记码不能为空");
+                return;
+            }
+            if (!height) {
+                alert("钱包恢复高度不能为空");
+                return;
+            }
+            if (!PublicAddress) {
+                alert("钱包地址不能为空");
+                return;
+            }
+            if (!ViewKey) {
+                alert("View秘钥不能为空");
+                return;
+            }
+            if (!SpendKey) {
+                alert("Spend秘钥不能为空");
+                return;
+            }
+
+
+            var key = randomString(16);
+            var iv = "tdrdadq59tbss5n7";
+            var finalStr = seed + "|" + height + "|" + PublicAddress + "|" + ViewKey + "|" + SpendKey;
+            // aes 加密
+            var seede = encrypt(finalStr, key, iv);
+            let decrypt1 = decrypt(seede, key, iv);
+            $('#encryptKey').val(key);
+            $('#encryptContent').val(seede);
+
+        }
+
+        function decrypt1() {
+            var encryptKey = document.getElementById("encryptKey").value;
+            var encryptContent = document.getElementById("encryptContent").value;
+
+            if (!encryptKey) {
+                alert("解密秘钥为空");
+                return;
+            }
+            if (!encryptContent) {
+                alert("解密字符为空");
+                return;
+            }
+            var iv = "tdrdadq59tbss5n7";
+
+            try {
+                var decrypt1 = decrypt(encryptContent, encryptKey, iv);
+            } catch (err) {
+                alert("解密秘钥或解密字符串有误：" + err);
+
+            }
+            console.log(decrypt1);
+            var strs = new Array(); //定义一数组
+            strs = decrypt1.split("|"); //字符分割
+            $('#seed').val(strs[0]);
+            $('#height').val(strs[1]);
+            $('#PublicAddress').val(strs[2]);
+            $('#ViewKey').val(strs[3]);
+            $('#SpendKey').val(strs[4]);
+
+        }
+
+        function clearAll() {
+            $('#seed').val('');
+            $('#height').val('');
+            $('#PublicAddress').val('');
+            $('#ViewKey').val('');
+            $('#SpendKey').val('');
+            $('#encryptKey').val('');
+            $('#encryptContent').val('');
+        }
+
+        // 加密
+        function encrypt(data, key, iv) { //key,iv：16位的字符串
+            var key1 = CryptoJS.enc.Latin1.parse(key);
+            var iv1 = CryptoJS.enc.Latin1.parse(iv);
+            return CryptoJS.AES.encrypt(data, key1, {
+                iv: iv1,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.ZeroPadding
+            }).toString();
+        }
+
+        // 解密
+        function decrypt(data, key, iv) { //key,iv：16位的字符串
+            var key1 = CryptoJS.enc.Latin1.parse(key);
+            var iv1 = CryptoJS.enc.Latin1.parse(iv);
+            var decrypted = CryptoJS.AES.decrypt(data, key1, {
+                iv: iv1,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.ZeroPadding
+            });
+            return decrypted.toString(CryptoJS.enc.Utf8);
+        }
+
+        function randomString(n) {
+            let str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ9876543210';
+            let tmp = '',
+                i = 0,
+                l = str.length;
+            for (i = 0; i < n; i++) {
+                tmp += str.charAt(Math.floor(Math.random() * l));
+            }
+            return tmp;
+        }
+    </script>
+</head>
+<body>
+<!-- banner -->
+<div class="center-container">
+    <div class="banner-dott">
+        <div class="main">
+            <h1 class="w3layouts_head">XMR账号加密保险</h1>
+            <div class="w3layouts_main_grid">
+                <div class="w3_agileits_main_grid w3l_main_grid">
+							<span class="agileits_grid">
+								<label>助记码(seed） </label>
+								<input type="text" id="seed">
+							</span>
+                </div>
+                <div class="w3_agileits_main_grid w3l_main_grid">
+							<span class="agileits_grid">
+								<label>钱包恢复高度（restore height）</label>
+								<input type="text" id="height">
+							</span>
+                </div>
+                <div class="w3_agileits_main_grid w3l_main_grid">
+							<span class="agileits_grid">
+								<label>钱包地址（Public address） </label>
+								<input type="text" id="PublicAddress"
+                                >
+							</span>
+                </div>
+                <div class="w3_agileits_main_grid w3l_main_grid">
+							<span class="agileits_grid">
+								<label>View秘钥(View key) </label>
+								<input type="text" id="ViewKey">
+								</span>
+                </div>
+                <div class="w3_agileits_main_grid w3l_main_grid">
+							<span class="agileits_grid">
+								<label>Spend秘钥(Spend key) </label>
+								<input type="text" id="SpendKey">
+								</span>
+                </div>
+                <div id="encryptKeyInput" class="w3_agileits_main_grid w3l_main_grid">
+							<span class="agileits_grid">
+								<label>生成的加密秘钥： </label>
+								<input type="text" id="encryptKey"/>
+								</span>
+                </div>
+                <div id="encryptContentArea" class="w3_agileits_main_grid w3l_main_grid">
+							<span class="agileits_grid">
+								<label>生成的加密字符</label>
+                                <textarea id="encryptContent"></textarea>
+								</span>
+                </div>
+
+                <div class="w3_main_grid">
+                    <div class="w3_main_grid_right">
+                        <input type="submit" value="加密" onclick="encrypt1()">
+                        <input type="submit" value="解密" onclick="decrypt1()">
+                        <input type="submit" value="清空" onclick="clearAll()">
+                    </div>
+                </div>
+
+            </div>
+            <div class="w3layouts_copy_right">
+                <div class="container">
+                    <p style="">© 2020 秒收XMR币. 加QQ群：<a> 910437015 </a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- //footer -->
+</body>
+
+
+</html>
